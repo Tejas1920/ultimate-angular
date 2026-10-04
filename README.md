@@ -1,59 +1,159 @@
-# UltimateAngular
+# Ultimate Angular
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.24.
+Modular (NgModule) Angular app packaged as a cross-platform desktop app with Electron.
 
-## Development server
+**Stack:** Angular 21 · Electron 44 · electron-builder 26 · SCSS
 
-To start a local development server, run:
+**Targets:** Windows (32/64-bit) · Linux (x64, ARM64, ARMv7) · macOS (Intel, Apple Silicon, Universal)
 
-```bash
-ng serve
+---
+
+## Prerequisites
+
+- Node.js 22 LTS (20.19+ also works)
+- npm 10+
+- Git
+
+```cmd
+node -v
+npm -v
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## Quick Start
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```cmd
+git clone <your-repo-url>
+cd ultimate-angular
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
+## Run
+
+| Goal                                        | Command                  |
+| ------------------------------------------- | ------------------------ |
+| Angular in browser (http://localhost:4200)  | `npm start`              |
+| Electron with hot reload (development)      | `npm run electron:dev`   |
+| Electron with production build (local test) | `npm run electron:start` |
+| Angular production build only               | `npm run build:ng`       |
+
+---
+
+## Build Distributions
+
+Output is created in the `release/` folder.
+
+| Platform            | Command                      | Output                         |
+| ------------------- | ---------------------------- | ------------------------------ |
+| Windows 32-bit      | `npm run dist:win32`         | Installer + portable exe       |
+| Windows 64-bit      | `npm run dist:win64`         | Installer + portable exe       |
+| Windows 32 + 64-bit | `npm run dist:win`           | Both                           |
+| Linux x64           | `npm run dist:linux64`       | `.AppImage`, `.deb`            |
+| Linux ARM64         | `npm run dist:linux-arm64`   | `.AppImage`, `.deb`            |
+| Linux ARMv7         | `npm run dist:linux-armv7l`  | `.AppImage`, `.deb`            |
+| macOS Intel         | `npm run dist:mac-intel`     | `.dmg`                         |
+| macOS Apple Silicon | `npm run dist:mac-silicon`   | `.dmg`                         |
+| macOS Universal     | `npm run dist:mac-universal` | `.dmg` (Intel + Apple Silicon) |
+
+> 32-bit Linux is not supported by Electron.
+
+---
+
+## Where Each Build Must Run
+
+| Target  | Windows PC              | Linux / WSL2 / Docker | Mac     |
+| ------- | ----------------------- | --------------------- | ------- |
+| Windows | Yes                     | -                     | -       |
+| Linux   | No (use WSL2 or Docker) | Yes                   | -       |
+| macOS   | **No**                  | **No**                | **Yes** |
+
+### Linux build from Windows (WSL2)
+
+```cmd
+wsl --install
 ```
 
-## Building
-
-To build the project run:
+Restart, then inside the Ubuntu terminal:
 
 ```bash
-ng build
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+source ~/.bashrc
+nvm install 22
+cd ~
+git clone <your-repo-url> ultimate-angular
+cd ultimate-angular
+npm ci
+npm run dist:linux64
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Clone into `~/`, not `/mnt/d/...` (slow, and reuses Windows `node_modules`).
 
-## Running unit tests
+### Linux build from Windows (Docker)
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+```cmd
+docker run --rm -ti -v %cd%:/project -v ultimate-angular-node-modules:/project/node_modules -w /project electronuserland/builder:latest /bin/bash -c "npm ci && npm run dist:linux64"
+```
+
+### macOS build
+
+Run on a Mac:
 
 ```bash
-ng test
+npm ci
+npm run dist:mac-universal
 ```
 
-## Running end-to-end tests
+---
 
-For end-to-end (e2e) testing, run:
+## Build All Platforms with GitHub Actions
 
-```bash
-ng e2e
+Workflow file: `.github/workflows/build.yml`
+
+```cmd
+git tag v1.0.0
+git push --tags
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Download the installers from the workflow run under **Actions → Artifacts**.
 
-## Additional Resources
+---
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Before Release
+
+- Set `version`, `description`, `author` in `package.json`
+- Add icons in `build/`: `icon.ico` (Windows), `icon.icns` (macOS), `icons/` PNG set (Linux)
+- Windows: unsigned installers show a SmartScreen warning (code-signing certificate needed)
+- macOS: unsigned `.dmg` needs right-click → Open (Apple Developer account needed for signing/notarization)
+
+---
+
+## Troubleshooting
+
+**Blank window on `npm run electron:start`**
+
+```cmd
+dir dist\ultimate-angular\browser\index.html
+findstr "base href" dist\ultimate-angular\browser\index.html
+```
+
+- `base href` must be `./`
+- Hash routing must be enabled
+- Dev mode must be controlled by the `ELECTRON_DEV` variable
+
+**Clean reinstall**
+
+```cmd
+rmdir /s /q node_modules dist release
+npm install
+```
+
+**macOS build fails on Windows / Linux**
+
+Expected. Use a Mac or GitHub Actions.
+
+**`.deb` build fails**
+
+Build on Linux (WSL2, Docker or CI) and make sure `author` has an email in `package.json`.
