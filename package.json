@@ -22,7 +22,15 @@
     "dist:linux-armv7l": "npm run build:ng && electron-builder --linux --armv7l",
     "dist:mac-intel": "npm run build:ng && electron-builder --mac --x64",
     "dist:mac-silicon": "npm run build:ng && electron-builder --mac --arm64",
-    "dist:mac-universal": "npm run build:ng && electron-builder --mac --universal"
+    "dist:mac-universal": "npm run build:ng && electron-builder --mac --universal",
+    "cap:sync": "npm run build:ng && npx cap sync",
+    "android:targets": "npx cap run android --list",
+    "android:run": "npm run cap:sync && npx cap run android",
+    "android:run:emulator": "npm run cap:sync && npx cap run android --target emulator-5554",
+    "android:apk": "npm run cap:sync && cd android && gradlew assembleDebug",
+    "android:install": "adb install -r android/app/build/outputs/apk/debug/app-debug.apk",
+    "ios:open": "npm run cap:sync && npx cap open ios",
+    "ios:run": "npm run cap:sync && npx cap run ios"
   },
   "build": {
     "appId": "com.example.ultimateangular",
@@ -71,6 +79,9 @@
     "@angular/forms": "^21.2.0",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/ios": "^8.5.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.16.0"
@@ -79,6 +90,7 @@
     "@angular/build": "^21.2.24",
     "@angular/cli": "^21.2.24",
     "@angular/compiler-cli": "^21.2.0",
+    "@capacitor/cli": "^8.5.2",
     "concurrently": "^10.0.5",
     "cross-env": "^10.1.0",
     "electron": "^44.5.1",
