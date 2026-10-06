@@ -85,11 +85,12 @@ You need _any_ project open in Visual Studio for the menu to be active (e.g. a b
 
 Capacitor and Gradle run outside Visual Studio, so they must be able to find the SDK and JDK.
 
-| Variable       | Typical value (check yours)                       |
-| -------------- | ------------------------------------------------- |
-| `ANDROID_HOME` | `C:\Program Files (x86)\Android\android-sdk`      |
-| `JAVA_HOME`    | `C:\Program Files\Microsoft\jdk-<version>`        |
-| `Path` (add)   | `%ANDROID_HOME%\platform-tools` (gives you `adb`) |
+| Variable           | Typical value (check yours)                       |
+| ------------------ | ------------------------------------------------- |
+| `ANDROID_HOME`     | `C:\Program Files (x86)\Android\android-sdk`      |
+| `JAVA_HOME`        | `C:\Program Files\Android\openjdk\jdk-<version>`  |
+| `ANDROID_SDK_ROOT` | `C:\Program Files (x86)\Android\android-sdk`      |
+| `Path` (add)       | `%ANDROID_HOME%\platform-tools` (gives you `adb`) |
 
 #### Step 5 - Start the emulator without opening Visual Studio (helper script)
 
